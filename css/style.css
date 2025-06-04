@@ -1,0 +1,467 @@
+/* 全局样式与字体设置 */
+body {
+    font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+    background: linear-gradient(135deg, #FFEDA0, #FFC371);
+    color: #4A4A4A;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+/* 主要容器 */
+.container {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 20px 25px;
+    border-radius: 30px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 95vw;
+    max-width: 700px;
+    max-height: 95vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 标题 */
+header h1 {
+    font-size: clamp(2em, 5vw, 3em);
+    color: #FF5722;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+header h1::before, header h1::after {
+    content: "🧩";
+    font-size: 0.8em;
+    margin: 0 10px;
+    filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.1));
+}
+header h1::after {
+    content: "🍭";
+}
+
+
+/* 菜单界面 */
+.menu-screen {
+    width: 100%;
+}
+.menu-screen h2 {
+    font-size: clamp(1.6em, 3.5vw, 2.2em);
+    color: #00796B;
+    margin-bottom: 25px;
+}
+.menu-button {
+    display: block;
+    width: 80%;
+    max-width: 350px;
+    margin: 18px auto;
+    padding: 20px 25px;
+    font-size: clamp(1.3em, 2.8vw, 1.7em);
+    font-weight: bold;
+    color: white;
+    background-color: #009688;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-out, transform 0.15s ease-out, box-shadow 0.2s;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+}
+.menu-button:hover, .menu-button:focus {
+    background-color: #00796B;
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 7px 12px rgba(0,0,0,0.2);
+    outline: none;
+}
+.menu-button:active {
+    transform: translateY(1px) scale(0.97);
+    background-color: #00695C;
+}
+
+/* 游戏区域整体布局 */
+main#main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+.game-area {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* 数独棋盘 */
+#sudoku-board {
+    display: grid;
+    border: 3px solid #795548;
+    margin: 15px auto;
+    width: fit-content;
+    background-color: #fff;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1) inset, 0 2px 4px rgba(0,0,0,0.1);
+}
+.sudoku-cell {
+    width: var(--sudoku-cell-size, 50px);
+    height: var(--sudoku-cell-size, 50px);
+    border: 1px solid #D7CCC8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: calc(var(--sudoku-cell-size, 50px) * 0.5);
+    font-weight: bold;
+    color: #1E88E5;
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;
+}
+.sudoku-cell.fixed {
+    background-color: #EFEBE9;
+    color: #3E2723;
+    cursor: default;
+    font-weight: 500;
+}
+.sudoku-cell.selected {
+    background-color: #FFFDE7;
+    outline: 2px solid #FFC107;
+    outline-offset: -2px;
+    box-shadow: 0 0 5px #FFC107;
+}
+.sudoku-cell.error {
+    background-color: #FFCDD2;
+    color: #B71C1C;
+    animation: shakeError 0.4s ease-in-out;
+}
+@keyframes shakeError {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-4px); }
+    40%, 80% { transform: translateX(4px); }
+}
+.sudoku-cell.hinted {
+    background-color: #C8E6C9;
+    color: #2E7D32;
+    animation: pulseHint 1s ease-out;
+}
+@keyframes pulseHint {
+    0% { transform: scale(1); box-shadow: none; }
+    50% { transform: scale(1.1); box-shadow: 0 0 10px rgba(76, 175, 80, 0.5); }
+    100% { transform: scale(1); box-shadow: none; }
+}
+.sudoku-cell.thick-border-right { border-right-width: 3px; border-right-color: #795548; }
+.sudoku-cell.thick-border-bottom { border-bottom-width: 3px; border-bottom-color: #795548; }
+
+/* 控制按钮区域 */
+#controls {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    max-width: 520px;
+}
+
+/* 数字选择器 (备选数字) */
+#number-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 8px 0;
+    background-color: rgba(0,0,0,0.04);
+    border-radius: 12px;
+}
+.num-button {
+    padding: 0;
+    font-size: calc(var(--sudoku-cell-size, 50px) * 0.45);
+    font-weight: bold;
+    border: 1px solid #CFD8DC;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    color: #546E7A;
+    cursor: pointer;
+    transition: background-color 0.15s, transform 0.1s, box-shadow 0.15s;
+    min-width: calc(var(--sudoku-cell-size, 50px) * 0.75);
+    height: calc(var(--sudoku-cell-size, 50px) * 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 2px rgba(0,0,0,0.08);
+}
+.num-button:hover {
+    background-color: #ECEFF1;
+    border-color: #B0BEC5;
+    box-shadow: 0 3px 4px rgba(0,0,0,0.1);
+}
+.num-button:active {
+    transform: scale(0.92);
+    background-color: #CFD8DC;
+}
+
+/* 操作按钮组 (检查、提示、擦除、新游戏) */
+.action-buttons-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px; /* 调整按钮间距，因为现在有4个按钮 */
+    width: 100%;
+    margin-top: 5px;
+    flex-wrap: wrap; /* 允许换行以防屏幕过窄 */
+}
+.control-button {
+    padding: 12px 20px; /* 稍微调整padding以适应可能增加的按钮数量 */
+    font-size: clamp(0.95em, 2.2vw, 1.2em);
+    font-weight: 500;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.15s, transform 0.1s, box-shadow 0.15s;
+    box-shadow: 0 3px 5px rgba(0,0,0,0.12);
+    text-align: center;
+    /* min-width: 90px; /* 可以根据按钮文字长度调整 */
+}
+.control-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 8px rgba(0,0,0,0.15);
+}
+.control-button:active {
+    transform: scale(0.95) translateY(0);
+}
+
+/* 特定按钮颜色 */
+#check-button   { background-color: #FFEB3B; color: #5D4037; } /* 检查 - 黄色，深色文字 */
+#hint-button    { background-color: #8BC34A; }
+#erase-button   { background-color: #F44336; }
+#new-game-button{ background-color: #9C27B0; }
+
+#check-button:hover   { background-color: #FDD835; }
+#hint-button:hover    { background-color: #689F38; }
+#erase-button:hover   { background-color: #D32F2F; }
+#new-game-button:hover{ background-color: #7B1FA2; }
+
+/* 返回菜单按钮 */
+#back-to-menu-button {
+    background-color: #03A9F4;
+    padding: 15px 25px;
+    font-size: clamp(1.1em, 2.5vw, 1.4em);
+    border-radius: 15px;
+    width: 80%;
+    max-width: 400px;
+    margin-top: 5px;
+}
+#back-to-menu-button:hover {
+    background-color: #0288D1;
+}
+
+
+/* 计时器和消息区域 */
+#timer, #message-area {
+    margin-top: 15px;
+    font-size: clamp(1.0em, 2.3vw, 1.35em);
+    color: #607D8B;
+    min-height: 1.5em;
+    width: 100%;
+    text-align: center;
+}
+#message-area {
+    font-weight: 500;
+    color: #D32F2F;
+}
+#message-area:empty::before {
+    content: "祝你玩得开心！";
+    color: #90A4AE;
+    font-style: italic;
+    font-weight: normal;
+}
+
+/* 新手教程区域 */
+.tutorial-area {
+    text-align: left;
+    padding: 20px 25px;
+    background-color: #E0F2F1;
+    border: 2px solid #4DB6AC;
+    border-radius: 20px;
+    margin: 20px auto;
+    max-width: 90%;
+    box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+}
+.tutorial-area h2 {
+    color: #00695C;
+    text-align: center;
+    font-size: clamp(1.5em, 3vw, 2em);
+    margin-top: 0;
+}
+.tutorial-area ol, .tutorial-area ul {
+    line-height: 1.8;
+    padding-left: 30px;
+    font-size: clamp(0.95em, 2.1vw, 1.15em);
+}
+.tutorial-area li { margin-bottom: 12px; }
+.tutorial-area strong { color: #004D40; }
+.tutorial-area img {
+    display: block;
+    margin: 15px auto;
+    max-width: 100%;
+    border: 1px solid #B2DFDB;
+    border-radius: 10px;
+}
+#close-tutorial-button {
+    display: block;
+    margin: 25px auto 0;
+    background-color: #009688;
+    padding: 12px 25px;
+    font-size: clamp(1em, 2.2vw, 1.2em);
+    font-weight: bold;
+    border-radius: 12px;
+    border: none;
+    color: white; /* 确保文字颜色 */
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+#close-tutorial-button:hover { background-color: #00796B; transform: translateY(-1px); }
+
+
+/* 完成弹窗 */
+.modal {
+    position: fixed;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 15px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s ease-out, visibility 0s linear 0.35s;
+}
+.modal.show {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.35s ease-out, visibility 0s linear 0s;
+}
+.modal-content {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 25px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    max-width: 90vw;
+    width: 480px;
+    transform: scale(0.85) translateY(20px);
+    transition: transform 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.3s ease-out;
+    opacity: 0;
+}
+.modal.show .modal-content {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+.modal-content h2 {
+    color: #4CAF50;
+    font-size: clamp(2em, 5vw, 2.8em);
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+}
+.modal-content p {
+    font-size: clamp(1.1em, 2.8vw, 1.4em);
+    margin: 18px 0;
+    color: #555;
+}
+#stars-earned {
+    font-size: clamp(2.2em, 7vw, 3.5em);
+    margin-bottom: 25px;
+    color: #FFC107;
+    letter-spacing: 0.1em;
+}
+#play-again-button, #modal-back-to-menu-button {
+    padding: 14px 28px;
+    font-size: clamp(1.05em, 2.4vw, 1.3em);
+    font-weight: bold;
+    margin: 12px 10px;
+    border-radius: 15px;
+    min-width: 150px;
+    border: none; /* 确保没边框 */
+    color: white; /* 确保文字颜色 */
+    cursor: pointer; /* 确保光标 */
+    transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s; /* 确保过渡 */
+}
+#play-again-button { background-color: #FF9800; box-shadow: 0 3px 5px rgba(255,152,0,0.3); }
+#play-again-button:hover { background-color: #F57C00; box-shadow: 0 5px 8px rgba(255,152,0,0.4); transform: translateY(-2px); }
+#modal-back-to-menu-button { background-color: #78909C; box-shadow: 0 3px 5px rgba(120,144,156,0.3); }
+#modal-back-to-menu-button:hover { background-color: #546E7A; box-shadow: 0 5px 8px rgba(120,144,156,0.4); transform: translateY(-2px); }
+
+
+/* 页脚 */
+footer {
+    margin-top: auto;
+    padding-top: 20px;
+    font-size: clamp(0.85em, 1.9vw, 1.05em);
+    color: #888;
+    width: 100%;
+    text-align: center;
+}
+
+/* CSS变量默认值 */
+:root {
+    --sudoku-cell-size: 50px;
+    --board-size: 9;
+}
+
+/* 响应式调整，针对非常小的屏幕 */
+@media (max-width: 480px) {
+    .container { padding: 15px; border-radius: 20px; }
+    header h1 { margin-bottom: 15px; font-size: clamp(1.8em, 6vw, 2.5em); }
+    header h1::before, header h1::after { margin: 0 5px; font-size: 0.7em; }
+    .menu-button { padding: 15px 18px; margin: 12px auto; font-size: clamp(1.2em, 3.5vw, 1.5em); }
+
+    .sudoku-cell {
+        font-size: calc(var(--sudoku-cell-size, 40px) * 0.5);
+    }
+    .num-button {
+        min-width: calc(var(--sudoku-cell-size, 40px) * 0.7);
+        height: calc(var(--sudoku-cell-size, 40px) * 0.7);
+        font-size: calc(var(--sudoku-cell-size, 40px) * 0.4);
+        border-radius: 8px;
+    }
+    .action-buttons-group .control-button {
+        font-size: clamp(0.85em, 2.5vw, 1em); /* 字体再小一点以适应4个按钮 */
+        padding: 10px 12px; /* padding也减小 */
+    }
+    .action-buttons-group {
+        gap: 8px; /* 按钮间距减小 */
+    }
+     #back-to-menu-button {
+        font-size: clamp(1em, 3vw, 1.25em);
+        padding: 12px 20px;
+    }
+    #controls { gap: 10px; }
+    #number-selector { gap: 4px; }
+
+
+    .modal-content { padding: 20px 25px; width: auto; }
+    .modal-content h2 { font-size: clamp(1.6em, 4.5vw, 2.2em); }
+    .modal-content p { font-size: clamp(1em, 2.5vw, 1.25em); }
+    #stars-earned { font-size: clamp(2em, 6vw, 3em); }
+    #play-again-button, #modal-back-to-menu-button { padding: 12px 20px; font-size: clamp(1em, 2.5vw, 1.15em); min-width: 120px; }
+}
