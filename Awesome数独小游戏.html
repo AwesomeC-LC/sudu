@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Awesome数独小乐园</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Awesome数独小乐园</h1>
+        </header>
+
+        <main id="main-content">
+            <div class="menu-screen" id="menu-screen">
+                <h2>选择一个开始吧！</h2>
+                <button class="menu-button" data-action="tutorial">🚀 新手教程</button>
+                <button class="menu-button" data-difficulty="easy">🌟 入门级 (4x4)</button>
+                <button class="menu-button" data-difficulty="medium">🍓 初级 (6x6)</button>
+                <button class="menu-button" data-difficulty="hard">🏆 中级 (9x9 简单)</button>
+                <button class="menu-button" data-difficulty="expert">👑 高级 (9x9 普通)</button>
+            </div>
+
+            <div class="game-area" id="game-area" style="display:none;">
+                <div id="sudoku-board"></div>
+                <div id="controls">
+                    <div id="number-selector">
+                        <!-- 数字按钮将在这里动态生成 -->
+                    </div>
+                    <!-- 修改这里的按钮组 -->
+                    <div class="action-buttons-group">
+                        <button id="check-button" class="control-button">检查</button>
+                        <button id="hint-button" class="control-button">提示</button>
+                        <button id="erase-button" class="control-button">擦除</button>
+                        <button id="new-game-button" class="control-button">新游戏</button>
+                    </div>
+                    <button id="back-to-menu-button" class="control-button">返回菜单</button>
+                </div>
+                <div id="timer">用时: <span id="time-elapsed">00:00</span></div>
+                <div id="message-area"></div>
+            </div>
+
+            <div class="tutorial-area" id="tutorial-area" style="display:none;">
+                <!-- ... (教程内容不变) ... -->
+                <h2>🚀 新手教程：数独怎么玩？</h2>
+                <p>数独是一个有趣的数字填充游戏！</p>
+                <ol>
+                    <li>目标是把<strong>1到N</strong>的数字（N取决于格子大小，比如9x9就是1到9）填进每一行、每一列和每一个小九宫格（或小区域）里。</li>
+                    <li>每一行、每一列、每个小九宫格（或小区域）里的数字都<strong>不能重复</strong>。</li>
+                    <li>游戏开始时会给出一些数字，你需要根据这些数字推理出其他空格里的数字。</li>
+                </ol>
+                <img src="image/Howtoplay.webp" alt="游戏玩法" style="width:80%; max-width:400px; margin:10px auto; display:block;">
+                <p><strong>操作提示：</strong></p>
+                <ul>
+                    <li>先点击棋盘上要填写的空格。</li>
+                    <li>然后点击下方出现的数字按钮，数字就会填进去啦！</li>
+                    <li>如果填错了，可以用“擦除”或“提示”按钮。</li>
+                </ul>
+                <button id="close-tutorial-button" class="control-button">我知道啦！</button>
+            </div>
+
+        </main>
+
+        <footer>
+            <p>Miss.罗Easy为同学们设计的数独游戏！</p>
+        </footer>
+    </div>
+
+    <div id="completion-modal" class="modal"> <!-- 移除 style="display:none;"，用CSS控制 -->
+        <div class="modal-content">
+            <h2>🎉 太棒啦！你完成了！🎉</h2>
+            <p>用时: <span id="final-time"></span></p>
+            <div id="stars-earned"></div>
+            <button id="play-again-button">再玩一局</button>
+            <button id="modal-back-to-menu-button">返回菜单</button>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
