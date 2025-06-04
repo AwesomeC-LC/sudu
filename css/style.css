@@ -9,7 +9,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    overflow: hidden;
+    overflow: hidden; /* Prevents scrollbars from gradient overflow */
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -29,9 +29,9 @@ body {
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
     text-align: center;
     width: 95vw;
-    max-width: 700px;
+    max-width: 700px; /* Max width for PC */
     max-height: 95vh;
-    overflow-y: auto;
+    overflow-y: auto; /* Allow scrolling if content overflows on small heights */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -113,40 +113,40 @@ main#main-content {
 /* 数独棋盘 */
 #sudoku-board {
     display: grid;
-    border: 3px solid #795548;
-    margin: 15px auto;
-    width: fit-content;
+    border: 3px solid #795548; /* Consistent border */
+    margin: 15px auto; /* Center the board */
+    width: fit-content; /* Allow board to size based on cells */
     background-color: #fff;
     box-shadow: 0 0 8px rgba(0,0,0,0.1) inset, 0 2px 4px rgba(0,0,0,0.1);
 }
 .sudoku-cell {
-    width: var(--sudoku-cell-size, 50px);
-    height: var(--sudoku-cell-size, 50px);
+    width: var(--sudoku-cell-size, 50px); /* Default, JS will override */
+    height: var(--sudoku-cell-size, 50px); /* Default, JS will override */
     border: 1px solid #D7CCC8;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: calc(var(--sudoku-cell-size, 50px) * 0.5);
+    font-size: calc(var(--sudoku-cell-size, 50px) * 0.5); /* Relative to cell size */
     font-weight: bold;
-    color: #1E88E5;
+    color: #1E88E5; /* User input color */
     cursor: pointer;
     transition: background-color 0.15s, color 0.15s;
 }
 .sudoku-cell.fixed {
     background-color: #EFEBE9;
-    color: #3E2723;
+    color: #3E2723; /* Fixed number color */
     cursor: default;
     font-weight: 500;
 }
 .sudoku-cell.selected {
     background-color: #FFFDE7;
     outline: 2px solid #FFC107;
-    outline-offset: -2px;
+    outline-offset: -2px; /* Outline inside the cell */
     box-shadow: 0 0 5px #FFC107;
 }
 .sudoku-cell.error {
-    background-color: #FFCDD2;
-    color: #B71C1C;
+    background-color: #FFCDD2; /* Light red */
+    color: #B71C1C; /* Dark red */
     animation: shakeError 0.4s ease-in-out;
 }
 @keyframes shakeError {
@@ -155,8 +155,8 @@ main#main-content {
     40%, 80% { transform: translateX(4px); }
 }
 .sudoku-cell.hinted {
-    background-color: #C8E6C9;
-    color: #2E7D32;
+    background-color: #C8E6C9; /* Light green */
+    color: #2E7D32; /* Dark green */
     animation: pulseHint 1s ease-out;
 }
 @keyframes pulseHint {
@@ -164,6 +164,7 @@ main#main-content {
     50% { transform: scale(1.1); box-shadow: 0 0 10px rgba(76, 175, 80, 0.5); }
     100% { transform: scale(1); box-shadow: none; }
 }
+/* Thick borders for subgrids */
 .sudoku-cell.thick-border-right { border-right-width: 3px; border-right-color: #795548; }
 .sudoku-cell.thick-border-bottom { border-bottom-width: 3px; border-bottom-color: #795548; }
 
@@ -175,7 +176,7 @@ main#main-content {
     align-items: center;
     gap: 15px;
     width: 100%;
-    max-width: 520px;
+    max-width: 520px; /* Max width for controls on PC */
 }
 
 /* 数字选择器 (备选数字) */
@@ -184,14 +185,15 @@ main#main-content {
     justify-content: center;
     align-items: center;
     gap: 6px;
-    width: 100%;
+    width: 100%; /* Take full width of its parent #controls */
     padding: 8px 0;
     background-color: rgba(0,0,0,0.04);
     border-radius: 12px;
+    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
 }
 .num-button {
-    padding: 0;
-    font-size: calc(var(--sudoku-cell-size, 50px) * 0.45);
+    padding: 0; /* Reset padding for flex centering */
+    font-size: calc(var(--sudoku-cell-size, 50px) * 0.45); /* Relative to cell size */
     font-weight: bold;
     border: 1px solid #CFD8DC;
     border-radius: 10px;
@@ -199,9 +201,9 @@ main#main-content {
     color: #546E7A;
     cursor: pointer;
     transition: background-color 0.15s, transform 0.1s, box-shadow 0.15s;
-    min-width: calc(var(--sudoku-cell-size, 50px) * 0.75);
-    height: calc(var(--sudoku-cell-size, 50px) * 0.75);
-    display: flex;
+    min-width: calc(var(--sudoku-cell-size, 50px) * 0.75); /* Relative to cell size */
+    height: calc(var(--sudoku-cell-size, 50px) * 0.75); /* Relative to cell size */
+    display: flex; /* For centering text */
     justify-content: center;
     align-items: center;
     box-shadow: 0 2px 2px rgba(0,0,0,0.08);
@@ -221,13 +223,13 @@ main#main-content {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 12px; /* 调整按钮间距，因为现在有4个按钮 */
+    gap: 12px;
     width: 100%;
     margin-top: 5px;
-    flex-wrap: wrap; /* 允许换行以防屏幕过窄 */
+    flex-wrap: wrap; /* Allow buttons to wrap */
 }
 .control-button {
-    padding: 12px 20px; /* 稍微调整padding以适应可能增加的按钮数量 */
+    padding: 12px 20px;
     font-size: clamp(0.95em, 2.2vw, 1.2em);
     font-weight: 500;
     border: none;
@@ -237,7 +239,9 @@ main#main-content {
     transition: background-color 0.15s, transform 0.1s, box-shadow 0.15s;
     box-shadow: 0 3px 5px rgba(0,0,0,0.12);
     text-align: center;
-    /* min-width: 90px; /* 可以根据按钮文字长度调整 */
+    /* min-width: 90px; /* Removed to allow flex to manage width better */
+    flex-grow: 1; /* Allow buttons to grow if space available, up to a point */
+    flex-basis: auto; /* Or a specific basis like 100px if needed */
 }
 .control-button:hover {
     transform: translateY(-2px);
@@ -247,8 +251,8 @@ main#main-content {
     transform: scale(0.95) translateY(0);
 }
 
-/* 特定按钮颜色 */
-#check-button   { background-color: #FFEB3B; color: #5D4037; } /* 检查 - 黄色，深色文字 */
+/* Specific button colors */
+#check-button   { background-color: #FFEB3B; color: #5D4037; }
 #hint-button    { background-color: #8BC34A; }
 #erase-button   { background-color: #F44336; }
 #new-game-button{ background-color: #9C27B0; }
@@ -259,14 +263,15 @@ main#main-content {
 #new-game-button:hover{ background-color: #7B1FA2; }
 
 /* 返回菜单按钮 */
-#back-to-menu-button {
+#back-to-menu-button { /* This is also a .control-button now, but can have specific overrides */
     background-color: #03A9F4;
-    padding: 15px 25px;
+    padding: 15px 25px; /* Larger padding for this prominent button */
     font-size: clamp(1.1em, 2.5vw, 1.4em);
     border-radius: 15px;
-    width: 80%;
+    width: 80%; /* More specific width control */
     max-width: 400px;
-    margin-top: 5px;
+    margin-top: 5px; /* Original margin-top */
+    flex-grow: 0; /* Don't let it grow like other action buttons */
 }
 #back-to-menu-button:hover {
     background-color: #0288D1;
@@ -278,17 +283,17 @@ main#main-content {
     margin-top: 15px;
     font-size: clamp(1.0em, 2.3vw, 1.35em);
     color: #607D8B;
-    min-height: 1.5em;
+    min-height: 1.5em; /* Prevents layout shift when message appears */
     width: 100%;
     text-align: center;
 }
 #message-area {
     font-weight: 500;
-    color: #D32F2F;
+    color: #D32F2F; /* Default to error/important message color */
 }
 #message-area:empty::before {
     content: "祝你玩得开心！";
-    color: #90A4AE;
+    color: #90A4AE; /* Softer color for placeholder */
     font-style: italic;
     font-weight: normal;
 }
@@ -301,7 +306,7 @@ main#main-content {
     border: 2px solid #4DB6AC;
     border-radius: 20px;
     margin: 20px auto;
-    max-width: 90%;
+    max-width: 90%; /* Relative to container */
     box-shadow: 0 5px 12px rgba(0,0,0,0.1);
 }
 .tutorial-area h2 {
@@ -324,18 +329,14 @@ main#main-content {
     border: 1px solid #B2DFDB;
     border-radius: 10px;
 }
-#close-tutorial-button {
+#close-tutorial-button { /* Also a .control-button */
     display: block;
     margin: 25px auto 0;
-    background-color: #009688;
+    background-color: #009688; /* Specific color */
     padding: 12px 25px;
     font-size: clamp(1em, 2.2vw, 1.2em);
-    font-weight: bold;
-    border-radius: 12px;
-    border: none;
-    color: white; /* 确保文字颜色 */
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
+    font-weight: bold; /* Ensure boldness */
+    /* border-radius, border, color, cursor, transition are inherited from .control-button */
 }
 #close-tutorial-button:hover { background-color: #00796B; transform: translateY(-1px); }
 
@@ -346,11 +347,11 @@ main#main-content {
     left: 0; top: 0;
     width: 100%; height: 100%;
     background-color: rgba(0,0,0,0.7);
-    display: flex;
+    display: flex; /* Use flex for centering */
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    padding: 15px;
+    padding: 15px; /* Padding for modal itself, ensures content isn't flush with screen edges */
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.35s ease-out, visibility 0s linear 0.35s;
@@ -366,8 +367,8 @@ main#main-content {
     border-radius: 25px;
     text-align: center;
     box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-    max-width: 90vw;
-    width: 480px;
+    max-width: 90vw; /* Max width relative to viewport */
+    width: 480px; /* Specific width for PC */
     transform: scale(0.85) translateY(20px);
     transition: transform 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.3s ease-out;
     opacity: 0;
@@ -392,19 +393,19 @@ main#main-content {
     font-size: clamp(2.2em, 7vw, 3.5em);
     margin-bottom: 25px;
     color: #FFC107;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.1em; /* Adds spacing between stars */
 }
 #play-again-button, #modal-back-to-menu-button {
     padding: 14px 28px;
     font-size: clamp(1.05em, 2.4vw, 1.3em);
     font-weight: bold;
-    margin: 12px 10px;
+    margin: 12px 10px; /* Spacing around buttons */
     border-radius: 15px;
-    min-width: 150px;
-    border: none; /* 确保没边框 */
-    color: white; /* 确保文字颜色 */
-    cursor: pointer; /* 确保光标 */
-    transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s; /* 确保过渡 */
+    min-width: 150px; /* Ensure buttons have a decent minimum width */
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
 }
 #play-again-button { background-color: #FF9800; box-shadow: 0 3px 5px rgba(255,152,0,0.3); }
 #play-again-button:hover { background-color: #F57C00; box-shadow: 0 5px 8px rgba(255,152,0,0.4); transform: translateY(-2px); }
@@ -414,7 +415,7 @@ main#main-content {
 
 /* 页脚 */
 footer {
-    margin-top: auto;
+    margin-top: auto; /* Pushes footer to bottom if container has space */
     padding-top: 20px;
     font-size: clamp(0.85em, 1.9vw, 1.05em);
     color: #888;
@@ -424,44 +425,157 @@ footer {
 
 /* CSS变量默认值 */
 :root {
-    --sudoku-cell-size: 50px;
-    --board-size: 9;
+    --sudoku-cell-size: 50px; /* Default, JS will update this */
+    --board-size: 9; /* Default, JS will update this */
 }
 
-/* 响应式调整，针对非常小的屏幕 */
-@media (max-width: 480px) {
-    .container { padding: 15px; border-radius: 20px; }
-    header h1 { margin-bottom: 15px; font-size: clamp(1.8em, 6vw, 2.5em); }
-    header h1::before, header h1::after { margin: 0 5px; font-size: 0.7em; }
-    .menu-button { padding: 15px 18px; margin: 12px auto; font-size: clamp(1.2em, 3.5vw, 1.5em); }
+/* --- Responsive Adjustments --- */
 
-    .sudoku-cell {
-        font-size: calc(var(--sudoku-cell-size, 40px) * 0.5);
+/* For tablets and larger phones (up to 768px wide) */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px 15px; /* Slightly reduce padding */
+        border-radius: 20px;
     }
-    .num-button {
-        min-width: calc(var(--sudoku-cell-size, 40px) * 0.7);
-        height: calc(var(--sudoku-cell-size, 40px) * 0.7);
-        font-size: calc(var(--sudoku-cell-size, 40px) * 0.4);
-        border-radius: 8px;
+    header h1 {
+        margin-bottom: 15px;
+        /* font-size clamp already handles this well */
+    }
+    .menu-button {
+        padding: 16px 20px;
+        margin: 15px auto;
+        font-size: clamp(1.2em, 3vw, 1.5em);
+    }
+
+    /* Number selector buttons will scale with --sudoku-cell-size from JS */
+    #number-selector {
+        gap: 5px; /* Slightly reduce gap */
+        padding: 6px;
+    }
+
+    .action-buttons-group {
+        gap: 10px; /* Adjust gap */
     }
     .action-buttons-group .control-button {
-        font-size: clamp(0.85em, 2.5vw, 1em); /* 字体再小一点以适应4个按钮 */
-        padding: 10px 12px; /* padding也减小 */
-    }
-    .action-buttons-group {
-        gap: 8px; /* 按钮间距减小 */
+        padding: 10px 15px; /* Smaller padding */
+        font-size: clamp(0.9em, 2vw, 1.1em);
+        min-width: 70px; /* A smaller min-width for more buttons in a row */
     }
      #back-to-menu-button {
-        font-size: clamp(1em, 3vw, 1.25em);
         padding: 12px 20px;
+        font-size: clamp(1em, 2.2vw, 1.3em);
     }
-    #controls { gap: 10px; }
-    #number-selector { gap: 4px; }
+    #controls {
+        gap: 12px;
+        max-width: 100%; /* Allow controls to use more width */
+    }
+    #timer, #message-area {
+        font-size: clamp(0.9em, 2.1vw, 1.25em);
+        margin-top: 12px;
+    }
+
+    .tutorial-area {
+        padding: 15px 20px;
+    }
+    .tutorial-area h2 { font-size: clamp(1.4em, 2.8vw, 1.9em); }
+    .tutorial-area ol, .tutorial-area ul { font-size: clamp(0.9em, 2vw, 1.1em); padding-left: 25px; }
+    #close-tutorial-button {
+        padding: 10px 20px;
+        font-size: clamp(0.95em, 2vw, 1.15em);
+    }
+
+    .modal-content {
+        padding: 25px 30px;
+        width: 85vw; /* Adjust width for tablets */
+    }
+    .modal-content h2 { font-size: clamp(1.8em, 4.5vw, 2.5em); }
+    .modal-content p { font-size: clamp(1em, 2.6vw, 1.3em); }
+    #stars-earned { font-size: clamp(2em, 6vw, 3.2em); }
+    #play-again-button, #modal-back-to-menu-button {
+        padding: 12px 22px;
+        font-size: clamp(1em, 2.3vw, 1.2em);
+        min-width: 130px;
+    }
+}
 
 
-    .modal-content { padding: 20px 25px; width: auto; }
-    .modal-content h2 { font-size: clamp(1.6em, 4.5vw, 2.2em); }
-    .modal-content p { font-size: clamp(1em, 2.5vw, 1.25em); }
-    #stars-earned { font-size: clamp(2em, 6vw, 3em); }
-    #play-again-button, #modal-back-to-menu-button { padding: 12px 20px; font-size: clamp(1em, 2.5vw, 1.15em); min-width: 120px; }
+/* For smaller phones (up to 480px wide) - this overrides/extends 768px rules */
+@media (max-width: 480px) {
+    .container {
+        padding: 10px 8px; /* Further reduce padding */
+        max-height: 98vh;
+    }
+    header h1 {
+        font-size: clamp(1.7em, 6.5vw, 2.2em); /* Slightly smaller on very small screens */
+        margin-bottom: 10px;
+    }
+    header h1::before, header h1::after {
+        margin: 0 3px; font-size: 0.65em;
+    }
+    .menu-button {
+        padding: 12px 15px;
+        margin: 10px auto;
+        font-size: clamp(1.1em, 3.8vw, 1.4em);
+        border-radius: 15px;
+    }
+
+    /* Cell and Num button font sizes are relative to --sudoku-cell-size set by JS */
+    /* So they will scale automatically. We just adjust layout things here if needed. */
+    #number-selector {
+        gap: 4px;
+        padding: 5px;
+    }
+    /* .num-button min-width and height are relative, should be okay */
+
+    .action-buttons-group {
+        gap: 6px; /* Even smaller gap */
+        /* Consider flex-direction: column; if buttons are too wide for one row */
+    }
+    .action-buttons-group .control-button {
+        font-size: clamp(0.8em, 2.8vw, 0.95em); /* Smaller font for buttons */
+        padding: 8px 10px; /* Smaller padding */
+        min-width: 60px; /* Further reduce min-width */
+        border-radius: 10px;
+    }
+     #back-to-menu-button {
+        font-size: clamp(0.9em, 3.2vw, 1.15em);
+        padding: 10px 15px;
+        width: 90%; /* Allow it to be wider */
+        border-radius: 12px;
+    }
+    #controls {
+        gap: 8px;
+        margin-top: 10px;
+    }
+    #timer, #message-area {
+        font-size: clamp(0.85em, 2.3vw, 1.1em);
+        margin-top: 10px;
+    }
+
+
+    .tutorial-area { padding: 10px 15px; margin: 15px auto; }
+    .tutorial-area h2 { font-size: clamp(1.2em, 3vw, 1.6em); }
+    .tutorial-area ol, .tutorial-area ul { font-size: clamp(0.85em, 2.2vw, 1em); padding-left: 20px; }
+    #close-tutorial-button { padding: 8px 18px; font-size: clamp(0.9em, 2.3vw, 1.1em); }
+
+
+    .modal-content {
+        padding: 15px 20px;
+        width: 90vw; /* Modal content takes more of the small screen */
+        border-radius: 20px;
+    }
+    .modal-content h2 { font-size: clamp(1.5em, 5vw, 2em); }
+    .modal-content p { font-size: clamp(0.9em, 2.8vw, 1.15em); }
+    #stars-earned { font-size: clamp(1.8em, 6.5vw, 2.8em); margin-bottom: 20px; }
+    #play-again-button, #modal-back-to-menu-button {
+        padding: 10px 18px;
+        font-size: clamp(0.9em, 2.6vw, 1.1em);
+        min-width: 100px; /* Smaller min-width for modal buttons */
+        margin: 8px 5px;
+        border-radius: 12px;
+    }
+    footer {
+        font-size: clamp(0.8em, 1.8vw, 0.95em);
+        padding-top: 15px;
+    }
 }
