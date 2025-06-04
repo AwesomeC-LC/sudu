@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(`正在开始游戏，难度: ${difficulty}`);
         gameArea.style.display = 'flex';
         messageArea.textContent = '游戏开始！点击格子选择数字。';
-        setBoardParameters(difficulty);
+        setBoardParameters(difficulty); // This will now also handle responsive cell size
 
         console.log(`棋盘大小设置为: ${boardSize}x${boardSize}`);
 
@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case 'medium':
                 boardSize = 6;
-                subgridSize = 0;
+                subgridSize = 0; // As per original code, CSS handles 6x6 subgrid visuals
                 break;
             case 'hard': // 9x9 简单
             case 'expert': // 9x9 普通
@@ -227,14 +227,53 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
         }
         document.documentElement.style.setProperty('--board-size', boardSize);
-        const cellSize = boardSize === 4 ? 70 : (boardSize === 6 ? 60 : 50);
+
+        // --- Modified cellSize calculation for responsiveness ---
+        let cellSize;
+        const screenWidth = window.innerWidth;
+
+        // Default PC sizes
+        if (boardSize === 4) {
+            cellSize = 70;
+        } else if (boardSize === 6) {
+            cellSize = 60;
+        } else { // 9x9
+            cellSize = 50;
+        }
+
+        // Adjust for smaller screens (cascade from smallest to largest or vice-versa)
+        if (screenWidth < 480) { // Smallest screens (e.g., typical phones in portrait)
+            if (boardSize === 4) {
+                cellSize = Math.min(40, Math.floor(screenWidth * 0.85 / boardSize) - 4); // Target 40px, or calculated, minus padding/border
+            } else if (boardSize === 6) {
+                cellSize = Math.min(30, Math.floor(screenWidth * 0.88 / boardSize) - 3); // Target 30px
+            } else { // 9x9
+                cellSize = Math.min(28, Math.max(22, Math.floor(screenWidth * 0.93 / boardSize) - 2)); // Target 28px, min 22px, 93% width
+            }
+        } else if (screenWidth < 768) { // Medium screens (e.g., tablets, larger phones)
+            if (boardSize === 4) {
+                cellSize = Math.min(50, Math.floor(screenWidth * 0.9 / boardSize) - 4); // Target 50px
+            } else if (boardSize === 6) {
+                cellSize = Math.min(40, Math.floor(screenWidth * 0.9 / boardSize) - 4); // Target 40px
+            } else { // 9x9
+                cellSize = Math.min(32, Math.floor(screenWidth * 0.92 / boardSize) - 2); // Target 32px
+            }
+        }
+        // If screenWidth >= 768, the PC default cellSize remains.
+        
+        cellSize = Math.floor(Math.max(20, cellSize)); // Ensure a minimum practical cell size (e.g., 20px)
+
+        console.log(`Screen Width: ${screenWidth}, Board Size: ${boardSize}x${boardSize}, Difficulty: ${difficulty}, Calculated Cell Size: ${cellSize}px`);
         document.documentElement.style.setProperty('--sudoku-cell-size', `${cellSize}px`);
     }
 
+
     function renderBoard() {
         sudokuBoardEl.innerHTML = '';
-        sudokuBoardEl.style.gridTemplateColumns = `repeat(${boardSize}, var(--sudoku-cell-size, 50px))`;
-        sudokuBoardEl.style.gridTemplateRows = `repeat(${boardSize}, var(--sudoku-cell-size, 50px))`;
+        // Grid template columns/rows are now relative to --sudoku-cell-size, which is dynamic
+        sudokuBoardEl.style.gridTemplateColumns = `repeat(${boardSize}, var(--sudoku-cell-size))`;
+        sudokuBoardEl.style.gridTemplateRows = `repeat(${boardSize}, var(--sudoku-cell-size))`;
+
 
         for (let r = 0; r < boardSize; r++) {
             for (let c = 0; c < boardSize; c++) {
@@ -253,14 +292,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     cell.addEventListener('click', () => handleCellClick(cell, r, c));
                 }
 
-                if (boardSize === 6) {
+                // Thick borders for subgrids
+                if (boardSize === 6) { // Specific 2x3 subgrids for 6x6
                     if ((c + 1) % 3 === 0 && c < boardSize - 1) {
                         cell.classList.add('thick-border-right');
                     }
                     if ((r + 1) % 2 === 0 && r < boardSize - 1) {
                         cell.classList.add('thick-border-bottom');
                     }
-                } else if (subgridSize > 0) {
+                } else if (subgridSize > 0) { // For 4x4 and 9x9 using subgridSize
                     if ((c + 1) % subgridSize === 0 && c < boardSize - 1) {
                         cell.classList.add('thick-border-right');
                     }
@@ -282,6 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('click', () => handleNumberClick(i));
             numberSelector.appendChild(btn);
         }
+        // Num button sizes are handled by CSS using var(--sudoku-cell-size)
     }
 
     function handleCellClick(cellElement, row, col) {
@@ -305,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedCell.element.textContent = num;
         userBoard[row][col] = num;
 
-        selectedCell.element.classList.remove('error');
+        selectedCell.element.classList.remove('error'); // Remove error class on new input
         messageArea.textContent = '填好了！';
         checkCompletion();
     }
@@ -338,17 +379,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function isValid(board, num, row, col) {
+        // Check row
         for (let c_ = 0; c_ < boardSize; c_++) {
             if (board[row][c_] === num && c_ !== col) return false;
         }
+        // Check column
         for (let r_ = 0; r_ < boardSize; r_++) {
             if (board[r_][col] === num && r_ !== row) return false;
         }
+        // Check subgrid
         let currentSubgridRows, currentSubgridCols;
-        if (boardSize === 4) { currentSubgridRows = 2; currentSubgridCols = 2; }
-        else if (boardSize === 6) { currentSubgridRows = 2; currentSubgridCols = 3; }
-        else if (boardSize === 9) { currentSubgridRows = 3; currentSubgridCols = 3; }
-        else { return true; }
+        if (boardSize === 4) { currentSubgridRows = 2; currentSubgridCols = 2; } // 2x2 subgrids
+        else if (boardSize === 6) { currentSubgridRows = 2; currentSubgridCols = 3; } // 2x3 subgrids
+        else if (boardSize === 9) { currentSubgridRows = 3; currentSubgridCols = 3; } // 3x3 subgrids
+        else { return true; } // Should not happen for valid boardSizes
 
         const startRow = row - (row % currentSubgridRows);
         const startCol = col - (col % currentSubgridCols);
@@ -364,11 +408,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function solveSudoku(board) {
-        const findVal = findEmpty(board); // 重命名避免与全局 find 冲突（如果存在）
+        const findVal = findEmpty(board); 
         if (!findVal) return true;
         const [row, col] = findVal;
 
         let numbersToTry = Array.from({length: boardSize}, (_, i) => i + 1);
+        // Shuffle numbers to try for varied puzzle generation
         for (let i = numbersToTry.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [numbersToTry[i], numbersToTry[j]] = [numbersToTry[j], numbersToTry[i]];
@@ -378,13 +423,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isValid(board, num, row, col)) {
                 board[row][col] = num;
                 if (solveSudoku(board)) return true;
-                board[row][col] = 0;
+                board[row][col] = 0; // Backtrack
             }
         }
         return false;
     }
 
-    let solutionCount;
+    let solutionCount; // Global for the recursive counter
     function countSolutions(board, limit = 2) {
         solutionCount = 0;
         _internalCountSolutions(board, limit);
@@ -398,46 +443,49 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         const [row, col] = findVal;
-        for (let num = 1; num <= boardSize; num++) {
+        for (let num = 1; num <= boardSize; num++) { // Try numbers in order for counting
             if (isValid(board, num, row, col)) {
                 board[row][col] = num;
                 _internalCountSolutions(board, limit);
-                if (solutionCount >= limit) return;
-                board[row][col] = 0;
+                if (solutionCount >= limit) return; // Optimization
+                board[row][col] = 0; // Backtrack
             }
         }
     }
 
     function generateSudokuPuzzle(size, difficulty) {
-        console.log(`生成 ${size}x${size} 谜题，难度: ${difficulty}`);
+        console.log(`Generating ${size}x${size} puzzle, difficulty: ${difficulty}`);
         let puzzle = Array(size).fill(null).map(() => Array(size).fill(0));
-        solveSudoku(puzzle);
+        solveSudoku(puzzle); // Fill the board completely, this becomes the solution
         const solution = puzzle.map(row => [...row]);
 
         let cellsToRemove;
         const totalCells = size * size;
 
-        if (size === 4) { // 16 格
-            cellsToRemove = (difficulty === 'easy') ? Math.floor(totalCells * 0.35) : Math.floor(totalCells * 0.45); // 约 5-7 格
-        } else if (size === 6) { // 36 格
-            cellsToRemove = (difficulty === 'medium') ? Math.floor(totalCells * 0.48) : Math.floor(totalCells * 0.53); // 约 17-19 格
-        } else { // 9x9, 81 格
-            if (difficulty === 'hard') { // 9x9 简单模式
-                cellsToRemove = Math.floor(totalCells * 0.50); // 移除约 50% (40-41格)，留下更多数字
-            } else if (difficulty === 'expert') { // 9x9 普通(专家)模式
-                cellsToRemove = Math.floor(totalCells * 0.62); // 移除约 62% (50格)
-            } else { // 默认 (如果添加了其他9x9难度)
-                cellsToRemove = Math.floor(totalCells * 0.58);
+        // Define cells to remove based on difficulty and size
+        if (size === 4) { // 16 cells
+            cellsToRemove = (difficulty === 'easy') ? Math.floor(totalCells * 0.35) : Math.floor(totalCells * 0.45); // ~5-7 cells
+        } else if (size === 6) { // 36 cells
+            cellsToRemove = (difficulty === 'medium') ? Math.floor(totalCells * 0.48) : Math.floor(totalCells * 0.53); // ~17-19 cells
+        } else { // 9x9, 81 cells
+            if (difficulty === 'hard') { // 9x9 Simple
+                cellsToRemove = Math.floor(totalCells * 0.50); // ~40-41 cells
+            } else if (difficulty === 'expert') { // 9x9 Normal (Expert)
+                cellsToRemove = Math.floor(totalCells * 0.62); // ~50 cells
+            } else { 
+                cellsToRemove = Math.floor(totalCells * 0.58); // Default for 9x9
             }
         }
-        // 确保至少有一些预填数字
-        if (totalCells - cellsToRemove < size + 1 && size > 4) cellsToRemove = totalCells - (size + 2); // 至少留 size+2 个
-        else if (totalCells - cellsToRemove < size && size <=4) cellsToRemove = totalCells - (size + 1); // 至少留 size+1 个
-
-
+        // Ensure a minimum number of clues remain
+        const minClues = size > 4 ? size + 2 : size + 1;
+        if (totalCells - cellsToRemove < minClues) {
+            cellsToRemove = totalCells - minClues;
+        }
+        
         let removedCount = 0;
         let cellCoordinates = [];
         for(let r=0; r<size; r++) for(let c=0; c<size; c++) cellCoordinates.push([r,c]);
+        // Shuffle coordinates to remove cells randomly
         for (let i = cellCoordinates.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [cellCoordinates[i], cellCoordinates[j]] = [cellCoordinates[j], cellCoordinates[i]];
@@ -445,18 +493,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         for (let i = 0; i < cellCoordinates.length && removedCount < cellsToRemove; i++) {
             const [r, c] = cellCoordinates[i];
-            if (puzzle[r][c] === 0) continue;
+            if (puzzle[r][c] === 0) continue; // Already removed or was part of multiple solutions path
+
             const temp = puzzle[r][c];
-            puzzle[r][c] = 0;
+            puzzle[r][c] = 0; // Try removing
+            
             const boardCopy = puzzle.map(row => [...row]);
-            const numSolutions = countSolutions(boardCopy, 2); // 检查唯一解 (limit=2 表示找到2个就停)
+            const numSolutions = countSolutions(boardCopy, 2); // Check for unique solution (limit 2 is enough)
+
             if (numSolutions !== 1) {
-                puzzle[r][c] = temp;
+                puzzle[r][c] = temp; // Put it back if not unique
             } else {
                 removedCount++;
             }
         }
-        console.log(`生成完毕: ${size}x${size} 谜题，预填 ${totalCells - removedCount} 格。移除了 ${removedCount} 格。`);
+        console.log(`Generated: ${size}x${size} puzzle. Clues: ${totalCells - removedCount}. Removed: ${removedCount}. Target removal: ${cellsToRemove}`);
         return { puzzle, solution };
     }
 
@@ -468,9 +519,12 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let c = 0; c < boardSize; c++) {
                 if (userBoard[r][c] === 0) {
                     allFilled = false;
+                    // No need to break, continue checking correctness for filled cells
                 }
                 if (userBoard[r][c] !== 0 && userBoard[r][c] !== currentSolution[r][c]) {
                     allCorrect = false;
+                    // We can break here if we only care about *any* error,
+                    // but for full check, let it run.
                 }
             }
         }
@@ -479,18 +533,22 @@ document.addEventListener('DOMContentLoaded', () => {
             stopTimer();
             messageArea.textContent = "🎉 恭喜你，完成了！ 🎉";
             finalTimeDisplay.textContent = formatTime(secondsElapsed);
-            let stars = "⭐⭐⭐";
+            let stars = "⭐⭐⭐"; // Default 3 stars
+            // Adjust stars based on time and difficulty
             if (boardSize === 9) {
-                if (secondsElapsed > 900 && currentDifficulty === 'expert') stars = "⭐⭐";
-                else if (secondsElapsed > 1200 && currentDifficulty === 'expert') stars = "⭐";
-                else if (secondsElapsed > 600 && currentDifficulty === 'hard') stars = "⭐⭐"; // 简单模式时间可以宽松点
-                else if (secondsElapsed > 800 && currentDifficulty === 'hard') stars = "⭐";
-            } else if (boardSize === 6) {
-                 if (secondsElapsed > 90) stars = "⭐⭐";
-                 if (secondsElapsed > 150) stars = "⭐";
-            } else if (boardSize === 4) {
-                 if (secondsElapsed > 45) stars = "⭐⭐";
-                 if (secondsElapsed > 75) stars = "⭐";
+                if (currentDifficulty === 'expert') {
+                    if (secondsElapsed > 900) stars = "⭐⭐"; // > 15 mins
+                    if (secondsElapsed > 1200) stars = "⭐";  // > 20 mins
+                } else if (currentDifficulty === 'hard') { // 9x9 Simple
+                    if (secondsElapsed > 600) stars = "⭐⭐"; // > 10 mins
+                    if (secondsElapsed > 800) stars = "⭐";  // > 13.3 mins
+                }
+            } else if (boardSize === 6) { // Medium (6x6)
+                 if (secondsElapsed > 90) stars = "⭐⭐";  // > 1.5 mins
+                 if (secondsElapsed > 150) stars = "⭐"; // > 2.5 mins
+            } else if (boardSize === 4) { // Easy (4x4)
+                 if (secondsElapsed > 45) stars = "⭐⭐";  // > 45 secs
+                 if (secondsElapsed > 75) stars = "⭐";   // > 1.25 mins
             }
             starsEarnedDisplay.textContent = stars;
             completionModal.classList.add('show');
