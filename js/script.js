@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuScreen = document.getElementById('menu-screen');
     const gameArea = document.getElementById('game-area');
     const tutorialArea = document.getElementById('tutorial-area');
+    const settingsArea = document.getElementById('settings-area');
 
     const sudokuBoardEl = document.getElementById('sudoku-board');
     const numberSelector = document.getElementById('number-selector');
@@ -11,9 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const completionModal = document.getElementById('completion-modal');
     const finalTimeDisplay = document.getElementById('final-time');
     const starsEarnedDisplay = document.getElementById('stars-earned');
+    const gameStatsDisplay = document.getElementById('game-stats');
 
     // 获取需要操作的按钮
-    const checkButton = document.getElementById('check-button'); // 重新获取检查按钮
+    const checkButton = document.getElementById('check-button');
     const hintButton = document.getElementById('hint-button');
     const eraseButton = document.getElementById('erase-button');
     const newGameButtonControls = document.getElementById('new-game-button');
@@ -21,6 +23,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeTutorialButton = document.getElementById('close-tutorial-button');
     const playAgainButton = document.getElementById('play-again-button');
     const modalBackToMenuButton = document.getElementById('modal-back-to-menu-button');
+    const saveSettingsButton = document.getElementById('save-settings-button');
+    const settingsBackButton = document.getElementById('settings-back-button');
+    const checkLimitInput = document.getElementById('check-limit-input');
+    const hintLimitInput = document.getElementById('hint-limit-input');
 
 
     let currentDifficulty = null;
@@ -35,6 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSolution = [];
     let userBoard = [];
 
+    // --- 新增：设置和使用次数追踪 ---
+    let maxChecks = Infinity;
+    let maxHints = Infinity;
+    let checksUsed = 0;
+    let hintsUsed = 0;
+
     // --- 事件监听器 ---
     document.querySelectorAll('.menu-button').forEach(button => {
         button.addEventListener('click', (e) => {
@@ -44,10 +56,13 @@ document.addEventListener('DOMContentLoaded', () => {
             menuScreen.style.display = 'none';
             tutorialArea.style.display = 'none';
             gameArea.style.display = 'none';
+            settingsArea.style.display = 'none';
             completionModal.classList.remove('show');
 
             if (action === 'tutorial') {
                 showTutorial();
+            } else if (action === 'settings') {
+                showSettings();
             } else if (difficulty) {
                 currentDifficulty = difficulty;
                 startGame(difficulty);
@@ -59,12 +74,38 @@ document.addEventListener('DOMContentLoaded', () => {
         tutorialArea.style.display = 'none';
         menuScreen.style.display = 'block';
     });
+    
+    // 新增：设置界面按钮事件
+    saveSettingsButton.addEventListener('click', () => {
+        const checkVal = parseInt(checkLimitInput.value, 10);
+        const hintVal = parseInt(hintLimitInput.value, 10);
+
+        maxChecks = (checkVal > 0) ? checkVal : Infinity;
+        maxHints = (hintVal > 0) ? hintVal : Infinity;
+
+        alert(`设置已保存！\n检查次数: ${maxChecks === Infinity ? '无限' : maxChecks}\n提示次数: ${maxHints === Infinity ? '无限' : maxHints}`);
+        
+        settingsArea.style.display = 'none';
+        menuScreen.style.display = 'block';
+    });
+
+    settingsBackButton.addEventListener('click', () => {
+        settingsArea.style.display = 'none';
+        menuScreen.style.display = 'block';
+    });
+
 
     backToMenuButton.addEventListener('click', goBackToMenu);
 
     // 游戏控制区按钮事件
     if (checkButton) {
         checkButton.addEventListener('click', () => {
+            // 新增：检查使用次数限制
+            if (checksUsed >= maxChecks) {
+                messageArea.textContent = `检查次数已用完！(${checksUsed}/${maxChecks})`;
+                return;
+            }
+            
             let errorsFound = 0;
             // 清除之前的错误高亮
             sudokuBoardEl.querySelectorAll('.sudoku-cell.error').forEach(cell => cell.classList.remove('error'));
@@ -83,11 +124,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }
+            
+            checksUsed++; // 增加使用次数
+            const remainingChecks = maxChecks === Infinity ? '无限' : maxChecks - checksUsed;
 
             if (errorsFound > 0) {
-                messageArea.textContent = `找到了 ${errorsFound} 个错误！已用红色标出。`;
+                messageArea.textContent = `找到了 ${errorsFound} 个错误！剩余检查次数: ${remainingChecks}。`;
             } else {
-                // 如果没有错误，检查是否已完成
                 if (checkCompletion()) {
                     // 完成的逻辑由 checkCompletion 处理
                 } else {
@@ -102,9 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         if(!allFilled) break;
                     }
                     if (allFilled) {
-                         messageArea.textContent = '棋盘已填满，但似乎还有未发现的错误，请再检查一下或使用提示！';
+                         messageArea.textContent = '棋盘已填满，但似乎还有未发现的错误！';
                     } else {
-                         messageArea.textContent = '太棒了，目前没有发现错误！继续加油！';
+                         messageArea.textContent = `太棒了，目前没有发现错误！剩余检查次数: ${remainingChecks}。`;
                     }
                 }
             }
@@ -113,6 +156,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (hintButton) {
         hintButton.addEventListener('click', () => {
+            // 新增：检查使用次数限制
+            if (hintsUsed >= maxHints) {
+                messageArea.textContent = `提示次数已用完！(${hintsUsed}/${maxHints})`;
+                return;
+            }
+
             if (!currentSolution || currentSolution.length === 0) {
                 messageArea.textContent = "抱歉，提示功能需要解答。";
                 return;
@@ -124,13 +173,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         const correctValue = currentSolution[r][c];
                         const cellElement = sudokuBoardEl.querySelector(`.sudoku-cell[data-row='${r}'][data-col='${c}']`);
                         if (cellElement) {
+                            hintsUsed++; // 成功给出提示后才增加次数
+                            const remainingHints = maxHints === Infinity ? '无限' : maxHints - hintsUsed;
                             cellElement.textContent = correctValue;
                             userBoard[r][c] = correctValue;
                             cellElement.classList.remove('error');
                             cellElement.classList.add('hinted');
                             setTimeout(() => cellElement.classList.remove('hinted'), 1500);
 
-                            messageArea.textContent = `提示：格子 (${r + 1}, ${c + 1}) 的数字是 ${correctValue}`;
+                            messageArea.textContent = `提示：(${r + 1}, ${c + 1}) 是 ${correctValue}。剩余提示: ${remainingHints}。`;
                             hintGiven = true;
                             checkCompletion();
                             return;
@@ -180,9 +231,16 @@ document.addEventListener('DOMContentLoaded', () => {
         tutorialArea.style.display = 'block';
     }
 
+    function showSettings() {
+        settingsArea.style.display = 'block';
+        checkLimitInput.value = maxChecks === Infinity ? '' : maxChecks;
+        hintLimitInput.value = maxHints === Infinity ? '' : maxHints;
+    }
+
     function goBackToMenu() {
         gameArea.style.display = 'none';
         tutorialArea.style.display = 'none';
+        settingsArea.style.display = 'none';
         menuScreen.style.display = 'block';
         completionModal.classList.remove('show');
         stopTimer();
@@ -193,9 +251,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startGame(difficulty) {
         console.log(`正在开始游戏，难度: ${difficulty}`);
+        // 新增：重置使用次数
+        checksUsed = 0;
+        hintsUsed = 0;
+
         gameArea.style.display = 'flex';
         messageArea.textContent = '游戏开始！点击格子选择数字。';
-        setBoardParameters(difficulty); // This will now also handle responsive cell size
+        setBoardParameters(difficulty);
 
         console.log(`棋盘大小设置为: ${boardSize}x${boardSize}`);
 
@@ -533,6 +595,12 @@ document.addEventListener('DOMContentLoaded', () => {
             stopTimer();
             messageArea.textContent = "🎉 恭喜你，完成了！ 🎉";
             finalTimeDisplay.textContent = formatTime(secondsElapsed);
+            
+            // 新增：显示游戏统计数据
+            const checksText = `检查次数: ${checksUsed}`;
+            const hintsText = `提示次数: ${hintsUsed}`;
+            gameStatsDisplay.innerHTML = `<p>${checksText}</p><p>${hintsText}</p>`;
+
             let stars = "⭐⭐⭐"; // Default 3 stars
             // Adjust stars based on time and difficulty
             if (boardSize === 9) {
