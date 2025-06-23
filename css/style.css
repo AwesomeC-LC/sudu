@@ -41,8 +41,8 @@ body {
 header h1 {
     font-size: clamp(2em, 5vw, 3em);
     color: #FF5722;
-    margin-top: 5px;
-    margin-bottom: 20px;
+    margin-top: 1px;
+    margin-bottom: 1px; /* 修改：减小下边距 */
     text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
     display: flex;
     align-items: center;
@@ -66,13 +66,14 @@ header h1::after {
 .menu-screen h2 {
     font-size: clamp(1.6em, 3.5vw, 2.2em);
     color: #00796B;
-    margin-bottom: 25px;
+    margin-top: 5px;
+    margin-bottom: 10px; /* 修改：进一步减小下边距 */
 }
 .menu-button {
     display: block;
     width: 80%;
     max-width: 350px;
-    margin: 18px auto;
+    margin: 14px auto; /* 修改：减小垂直间距 */
     padding: 20px 25px;
     font-size: clamp(1.3em, 2.8vw, 1.7em);
     font-weight: bold;
@@ -94,6 +95,16 @@ header h1::after {
     transform: translateY(1px) scale(0.97);
     background-color: #00695C;
 }
+
+/* 新增：设置按钮的特定样式 */
+.menu-button[data-action="settings"] {
+    background-color: #607D8B;
+    margin-bottom: 1px
+}
+.menu-button[data-action="settings"]:hover {
+    background-color: #546E7A;
+}
+
 
 /* 游戏区域整体布局 */
 main#main-content {
@@ -298,6 +309,54 @@ main#main-content {
     font-weight: normal;
 }
 
+/* 新增：设置区域样式 */
+.settings-area {
+    text-align: left;
+    padding: 20px 25px;
+    background-color: #ECEFF1;
+    border: 2px solid #90A4AE;
+    border-radius: 20px;
+    margin: 20px auto;
+    max-width: 90%;
+    width: 500px;
+    box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.settings-area h2 {
+    color: #37474F;
+    text-align: center;
+    font-size: clamp(1.5em, 3vw, 2em);
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+.setting-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.setting-item label {
+    font-size: clamp(0.95em, 2.1vw, 1.15em);
+    color: #546E7A;
+}
+.setting-item input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #B0BEC5;
+    font-size: 1em;
+}
+#save-settings-button { 
+    background-color: #4CAF50; 
+    flex-grow: 0; 
+    margin-top: 10px; /* 修改：增加上边距 */
+}
+#save-settings-button:hover { background-color: #388E3C; }
+#settings-back-button { background-color: #78909C; flex-grow: 0; }
+#settings-back-button:hover { background-color: #546E7A; }
+
+
 /* 新手教程区域 */
 .tutorial-area {
     text-align: left;
@@ -386,8 +445,18 @@ main#main-content {
 }
 .modal-content p {
     font-size: clamp(1.1em, 2.8vw, 1.4em);
-    margin: 18px 0;
+    margin: 10px 0; /* 修改：减小上下边距 */
     color: #555;
+}
+/* 新增：游戏统计数据样式 */
+#game-stats {
+    font-size: clamp(1em, 2.5vw, 1.2em);
+    color: #757575;
+    margin: 15px 0;
+}
+#game-stats p {
+    margin: 5px 0;
+    font-size: inherit; /* 继承父级字体大小 */
 }
 #stars-earned {
     font-size: clamp(2.2em, 7vw, 3.5em);
@@ -443,7 +512,7 @@ footer {
     }
     .menu-button {
         padding: 16px 20px;
-        margin: 15px auto;
+        margin: 12px auto; /* 修改：减小垂直间距 */
         font-size: clamp(1.2em, 3vw, 1.5em);
     }
 
@@ -472,6 +541,10 @@ footer {
     #timer, #message-area {
         font-size: clamp(0.9em, 2.1vw, 1.25em);
         margin-top: 12px;
+    }
+    
+    .settings-area {
+        width: auto; /* Let it be flexible on smaller screens */
     }
 
     .tutorial-area {
@@ -514,7 +587,7 @@ footer {
     }
     .menu-button {
         padding: 12px 15px;
-        margin: 10px auto;
+        margin: 9px auto; /* 修改：减小垂直间距 */
         font-size: clamp(1.1em, 3.8vw, 1.4em);
         border-radius: 15px;
     }
